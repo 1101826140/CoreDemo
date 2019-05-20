@@ -1,0 +1,20 @@
+﻿@using   WebApplication.ViewModels
+
+ 
+---------我是其他页面来的start--------------
+@foreach (StudentViewArgs s in   Model)
+{
+    <li>
+        @s.Name
+        <a href="Home/Details/@s.ID">详情</a>
+        &nbsp;
+
+        @Html.ActionLink("详情2", "Details", new { id = s.ID })
+
+        &nbsp;
+
+        <a asp-action="Details" asp-controller="Home" asp-route-id="@s.ID">详情3</a>
+    </li>
+
+}
+---------我是其他页面来的-end-------------

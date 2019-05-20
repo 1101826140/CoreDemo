@@ -1,0 +1,51 @@
+﻿@using   WebApplication.ViewModels
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    List<StudentViewArgs> students = (List<StudentViewArgs>)Model;
+}
+
+
+hello home/index page
+<br />
+
+@* 以下三种方式都行 *@
+@*@await  Html.PartialAsync("_StudentList", students)*@
+
+@*@Html.Partial("_StudentList", students)*@
+
+<partial name="_StudentList" for="@students" />
+
+
+<ul>
+    @foreach (StudentViewArgs s in students)
+    {
+        <li>
+            @s.Name
+            <a href="Home/Details/@s.ID">详情</a>
+            &nbsp;
+
+            @Html.ActionLink("详情2", "Details", new { id = s.ID })
+
+            &nbsp;
+
+            <a asp-action="Details" asp-controller="Home" asp-route-id="@s.ID">详情3</a>
+        </li>
+
+    }
+</ul>
+@section bottom{
+    <a asp-action="create">创建</a>
+}
+
+
+@* 写法一: *@
+@*@await Component.InvokeAsync("Welcome")*@
+
+@* 写法2:需要在viewimports页面引用component命名空间才有效果 *@
+@*<vc:Welcome></vc:Welcome>*@
+
+
+@*短横线命名方式*@
+<vc:test-name></vc:test-name>

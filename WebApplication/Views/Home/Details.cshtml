@@ -1,0 +1,24 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+
+*@
+@*@using WebApplication.Models;*@
+
+@using WebApplication.ViewModels
+
+@{
+    Layout = null; //也能把这个清空
+    StudentViewArgs student = Model;
+}
+
+i am details page
+<br />
+<hr />
+<h1>@student.Name</h1>
+
+@student.Address
+
+
+<a asp-action="Index">返回</a>
+

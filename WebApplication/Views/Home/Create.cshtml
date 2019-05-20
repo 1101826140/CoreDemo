@@ -1,0 +1,43 @@
+﻿@*@page*@
+@using WebApplication.ViewModels
+@using WebApplication.Enums
+@model StudentAddArgs
+@{
+}
+
+create page
+
+@*<form action="create">
+*@
+<form method="post" action="Create">
+
+    <label asp-for="FirstName"></label>
+    <input asp-for="FirstName" />
+    <span asp-validation-for="FirstName"></span>
+    <br />
+    <label asp-for="LastName"></label>
+    <input asp-for="LastName" />
+    <span asp-validation-for="LastName"></span>
+    <br />
+    <label asp-for="Address"></label>
+    <input asp-for="Address" />
+    <br />
+    <label asp-for="Birthday"></label>
+    <input asp-for="Birthday" type="date" />
+    <br />
+    <label asp-for="Gender"></label>
+    <select asp-for="Gender" asp-items="Html.GetEnumSelectList<GenderEnumType>()"></select>
+
+
+    整个错误信息汇总:
+    <div asp-validation-summary="All"></div>
+
+    我只显示model错误:
+    <div asp-validation-summary="ModelOnly"></div>
+    <button type="submit">提交</button>
+</form>
+<a asp-action="Index">返回</a>
+
+@* 加入组件,"WelCcome对应的是WelcomeViewComponent" *@
+
+@*@await Component.InvokeAsync("Welcome")*@
