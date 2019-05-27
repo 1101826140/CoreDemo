@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens.Saml;
 using WebApplication.Dbcontext;
+using WebApplication.Filter;
 using WebApplication.Models;
 using WebApplication.Services;
 
@@ -19,7 +21,7 @@ namespace WebApplication
     public class Startup
     {
         private readonly IConfiguration configuration;
-         
+
 
         public Startup(IConfiguration configuration)
         {
@@ -32,7 +34,8 @@ namespace WebApplication
             string connectionString = configuration["ConnectionString:CoreDemoDB"].ToString();
 
             //string connectionString = configuration.GetConnectionString("CoreDemoDB").ToString();
-            services.AddDbContext<CoreDBContext>(options => {
+            services.AddDbContext<CoreDBContext>(options =>
+            {
                 // options.useSqlServer()
                 options.UseSqlServer(connectionString);
             });
@@ -40,7 +43,7 @@ namespace WebApplication
 
             services.AddMvc();
 
-            
+
             //IWelcomServices 需要注册再使用，否则会出错
 
             //整个系统只实例化一次
@@ -56,6 +59,15 @@ namespace WebApplication
             //services.AddSingleton<IRepository<Student>, MemoryRepository>();
 
             services.AddScoped<IRepository<Student>, StudentRepositroy>();
+
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+
+                //options.Filters.Add(new LogResourceFilter());
+                //options.Filters.Add(typeof(LogAsyncResourceFilter));
+                options.Filters.Add<LogResourceFilter>();  //全局过滤器
+            });
         }
 
 
@@ -97,14 +109,18 @@ namespace WebApplication
             ILogger<Startup> log
         )
         {
+            // app.UseWelcomePage(); //welcome页面
             if (env.IsDevelopment()) //来源于launchSettings.json
             {
+                app.UseDeveloperExceptionPage();//开发者异常页面
+                app.UseStatusCodePages();
                 app.UseDeveloperExceptionPage();
             }
             else
             {
+                app.UseExceptionHandler("/Home/MyError"); //生产环境配置的错误页面
+                                                          //app.UseExceptionHandler();
 
-                app.UseExceptionHandler();
             }
 
             /*
@@ -140,7 +156,7 @@ namespace WebApplication
             //app.UseFileServer();
 
             app.UseStaticFiles();
-            //app.UseMvcWithDefaultRoute();
+            app.UseMvcWithDefaultRoute();
             //app.UseMvc();
 
 
@@ -151,13 +167,15 @@ namespace WebApplication
             //    builder.MapRoute("Default", "{controller=Home}/{action=Index}/{id?}");
             //});
 
-            app.UseMvcWithDefaultRoute();
+            //app.UseMvcWithDefaultRoute();
             app.Run(async (context) =>
             {
                 // throw new Exception("error by sun");
                 string welcome = services.GetMessage();
                 await context.Response.WriteAsync(welcome);
             });
+
+
         }
 
 

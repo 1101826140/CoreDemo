@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Logging;
+using WebApplication.Filter;
+using WebApplication.Log;
 using WebApplication.Models;
 using WebApplication.Services;
 using WebApplication.ViewModels;
@@ -13,15 +16,16 @@ using WebApplication.ViewModels;
 /// </summary>
 namespace WebApplication.Controllers
 {
+    //[LogResourceFilter] : controller级别
     public class HomeController : Controller
     {
         private readonly IRepository<Student> repository;
+        private readonly ILogger<HomeController> logger; //内置logger
 
-
-
-        public HomeController(IRepository<Student> repository)
+        public HomeController(IRepository<Student> repository, ILogger<HomeController> logger)
         {
             this.repository = repository;
+            this.logger = logger;
         }
 
 
@@ -43,14 +47,17 @@ namespace WebApplication.Controllers
 
         //    return View(list);
         //}
-
-
         /// <summary>
         /// home/index
         /// </summary>
         /// <returns></returns>
+       // [LogResourceFilter] //action级别
+       
         public IActionResult Index()
         {
+            logger.LogInformation(MyLogger.HomePage, "------------------Visit Home Index Page---------------");
+            logger.LogTrace("-----------------我等级低就不写入到控制台--------------");  //根据appsettings.{development}.json文件中的设置
+            // throw new Exception("我是异常");
             var list = repository.GetList();
             var svm = list.Select(t => new StudentViewArgs()
             {
@@ -71,7 +78,8 @@ namespace WebApplication.Controllers
         /// <returns></returns>
         public IActionResult Details(int id)
         {
-            //var stu = repository.Get(id);
+            //var stu = repository.Get(id); 
+            logger.LogInformation(MyLogger.HomePage, "------------------Visit Home Details Page---------------" + id);
 
             StudentViewArgs stu = repository.GetList().Where(t => t.ID == id).Select(t => new StudentViewArgs()
             {
@@ -123,5 +131,11 @@ namespace WebApplication.Controllers
             return View();
         }
 
+
+        public IActionResult MyError()
+        {
+
+            return View();
+        }
     }
 }
